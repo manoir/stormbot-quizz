@@ -1,0 +1,18 @@
+language: python
+python:
+  - "3.6"
+install:
+  - pip install twine
+script:
+  - ./setup.py test
+  - ./setup.py build sdist
+  - twine check dist/*
+deploy:
+  provider: pypi
+  user: "pfariello"
+  password:
+    secure: PwHqe0PrXxrlL9Ay0e5iJtvXNfu0aiw8KavrjDW/2DnwVmGb7QOMsbH0jbd8RfR/BndUbOBh0Dyu7Dl9JkhpswAF36zEIgwav+sFANW9VvhEan8TiERU9w3ZAsJOL2k3+BFE/jI/3TUhp8Ww0JmlQw0OQtIDfHdjTfkKnK4Ds9LyQl6g+JyA4A+cVCvzU1VegFVTbCbziGirHJXrVfCObSwsCdAQ9YVRHucZ52rlqGwI9VvU8LedI2POfShKt3oYeeGSAtxKT0bXVka0GeWtVJtS6MEm0dUlMEYxHU/q8Fcmmh48LlL3Yvo3AlumCVVHVbL213FUxOPnBKwZE9lYWjUvo6OxBYLSjESwCH4Jv51eqwtylTj2LyUI5zRRCiteiALOuOEUsxoFtZ1QV0qDpY8n3NJk9tVIUICxGSshA9W4hZ7pq8fPRU1A+J+IcPB8pHK6uclEzoRx+vaZKG9ysF6V63d64X9UUkMNisrUuQtftbXHoGS1L20hkIeoCPfIfWOVT6WAoqjee5LHpxn5DmIUyLGpYCQB7uGNDmM0gBcF+/KKb45vVtbppKLlMZfyySoddV+byAxtLVR3hOb97FGY6PgMxjEgOqnAEE5iwBrGZctQV5W/5m1XKf27gVT645a3judelaQt4zyrJCb0SY4dpdnMVr04Vy7/vUO/JcM=
+  on:
+    tags: true
+    python: "3.6"
+  skip_existing: true
