@@ -75,7 +75,7 @@ class Quizz(Plugin):
         cmd_score = subcmd.add_parser('next')
         cmd_score.set_defaults(subcmd=self._next)
 
-    def run(self, msg, parser, args):
+    async def run(self, msg, parser, args, peer):
         args.subcmd(msg, args)
 
     def _list(self, msg, args):
