@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='stormbot-quizz',
-      version='1.7.dev7',
+      version='2.0b1',
       description='quizz plugin for stormbot',
       long_description=long_description,
       author='Paul Fariello',
@@ -18,7 +18,7 @@ setup(name='stormbot-quizz',
       url='https://github.com/manoir/stormbot-quizz',
       packages=find_packages(),
       package_data={'stormbot_quizz': ['data/*.json']},
-      install_requires=['Stormbot>=1.7.dev7'],
+      install_requires=['stormbot>=2.0b1'],
       entry_points={'stormbot.plugins': ['quizz = stormbot_quizz:Quizz']},
       classifiers=['Environment :: Console',
                    'Operating System :: POSIX',
