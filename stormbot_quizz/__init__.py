@@ -6,9 +6,14 @@ import json
 import operator
 import unicodedata
 import re
+import logging
 from pkg_resources import resource_string
 
+import stormbot
 from stormbot.bot import Plugin
+
+logger = logging.getLogger(stormbot.__name__ + '.' +  __name__.strip("stormbot_"))
+
 
 class Contestant:
     def __init__(self, jid):
@@ -78,12 +83,22 @@ class Quizz(Plugin):
     async def run(self, msg, parser, args, peer):
         args.subcmd(msg, args)
 
+    def fallback(self, stanza, msg) -> bool:
+        if self._current_quizz is None:
+            return False
+
+        jid = stanza["from"].resource
+        self._handle_answer(jid, msg.strip())
+        return True
+
     def _list(self, msg, args):
         for quizz in self._quizz:
             self._bot.write(quizz)
 
     def _start(self, msg, args):
+        logger.info("Start quizz %s", args.quizz)
         if args.quizz not in self._quizz:
+            logger.info("Invalid quizz %s", args.quizz)
             self._bot.write("{} isn't a valid quizz. You, dumbass.".format(args.quizz))
             return
 
@@ -124,19 +139,15 @@ class Quizz(Plugin):
         self._current_question = random.choice(list(self._current_quizz["questions"].keys()))
         self._bot.write("Quizz {} ({}/{}): {}".format(self._current_quizz_name, self._count, self._max, self._current_question))
 
-    def _answer(self, msg, args):
-        if self._current_quizz is None:
-            self._bot.write("Nice one. You are stupid enought to answer while we are not playing any quizz.")
-            return
-
-        jid = msg["from"].resource
+    def _handle_answer(self, jid, answer):
+        logger.debug("Handle answer: %s", answer)
         if jid not in self._scores:
-            self._scores[jid] = Contestant(msg["from"].resource)
+            self._scores[jid] = Contestant(jid)
 
         contestant = self._scores[jid]
 
         valid = True
-        for answer, reference in zip(args.answer.split(" "), self._current_answer.split(" ")):
+        for answer, reference in zip(answer.split(" "), self._current_answer.split(" ")):
             valid = valid and phonex(answer) == phonex(reference)
 
         if contestant.answer(valid):
@@ -144,6 +155,14 @@ class Quizz(Plugin):
             self._question()
         else:
             self._bot.write("{}: {}".format(contestant.resource, random.choice(self.BAD_ANSWER)))
+
+    def _answer(self, msg, args):
+        if self._current_quizz is None:
+            self._bot.write("Nice one. You are stupid enought to answer while we are not playing any quizz.")
+            return
+
+        jid = msg["from"].resource
+        self._handle_answer(jid, args.answer)
 
     def _next(self, msg, args):
         if self._current_quizz is None:
